@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>إلى شيماء 🤍</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-playful: #ffe4e6;
+            --primary-color: #fb7185;
+            --text-dark: #881337;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+            font-family: 'Tajawal', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-playful);
+            color: var(--text-dark);
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+            transition: background-color 0.5s ease;
+        }
+
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease;
+            transform: scale(0.95);
+            padding: 20px;
+        }
+
+        .screen.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1);
+        }
+
+        /* ---------------------------------
+           الأزرار المرحة والقائمة
+           --------------------------------- */
+        .btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(251, 113, 133, 0.4);
+            transition: transform 0.2s;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        .btn:active { transform: scale(0.95); }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(136, 19, 55, 0.1);
+            border: none;
+            color: var(--text-dark);
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            z-index: 100;
+            font-weight: bold;
+        }
+
+        .title {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            color: #e11d48;
+            text-shadow: 2px 2px 0px rgba(255,255,255,0.5);
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .menu-card {
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid #fda4af;
+            border-radius: 30px;
+            padding: 30px 15px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(244, 63, 94, 0.1);
+            transition: transform 0.3s;
+        }
+
+        .menu-card:active { transform: scale(0.9); }
+
+        .menu-card i {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .menu-card p {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        /* ---------------------------------
+           رسالة من القلب (تأثير الظرف)
+           --------------------------------- */
+        .envelope-wrapper {
+            position: relative;
+            width: 320px;
+            height: 220px;
+            margin-top: 50px;
+            cursor: pointer;
+        }
+
+        .env-back {
+            position: absolute;
+            width: 100%; height: 100%;
+            background: #fca5a5;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .env-letter {
+            position: absolute;
+            bottom: 5px;
+            left: 5%;
+            width: 90%;
+            height: 95%;
+            background: #fff;
+            border-radius: 10px;
+            transition: all 1s ease-in-out;
+            padding: 25px 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            z-index: 2;
+            text-align: center;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #4c1d95;
+            overflow-y: auto;
+        }
+
+        .env-flap {
+            position: absolute;
+            top: 0; left: 0;
+            width: 0; height: 0;
+            border-left: 160px solid transparent;
+            border-right: 160px solid transparent;
+            border-top: 110px solid #ef4444;
+            transform-origin: top;
+            transition: transform 0.6s ease-in-out;
+            z-index: 4;
+        }
+
+        .env-front {
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 0; height: 0;
+            border-left: 160px solid #f87171;
+            border-right: 160px solid #f87171;
+            border-bottom: 110px solid #fca5a5;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        .envelope-wrapper.open .env-flap { transform: rotateX(180deg); z-index: 1; }
+        .envelope-wrapper.open .env-letter { transform: translateY(-80px) scale(1.05); height: 380px; z-index: 5; }
+
+        /* ---------------------------------
+           شاشة الصور (تأثير مسح الضباب)
+           --------------------------------- */
+        .scratch-container {
+            position: relative;
+            width: 300px;
+            height: 400px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            background: #fff;
+        }
+
+        .scratch-img {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+        }
+
+        #fog-canvas {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 10;
+            cursor: pointer;
+        }
+
+        .photo-controls { margin-top: 20px; display: flex; gap: 15px; }
+
+        #fullscreen-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        #fullscreen-img {
+            max-width: 95%; max-height: 80%; border-radius: 15px; box-shadow: 0 0 20px rgba(255,255,255,0.2);
+        }
+
+        /* ---------------------------------
+           شاشة المحادثة التفاعلية
+           --------------------------------- */
+        .chat-bubble {
+            background: white; color: #881337; padding: 15px 25px; border-radius: 20px;
+            border-bottom-right-radius: 0; font-size: 1.3rem; margin-bottom: 20px;
+            max-width: 80%; box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); font-weight: bold;
+        }
+        @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        .percentage-text { font-size: 3rem; color: #e11d48; font-weight: bold; margin: 20px 0; }
+
+        /* ---------------------------------
+           شاشة خريطة النجوم (الخاصة بك)
+           --------------------------------- */
+        #stars-screen {
+            background: radial-gradient(circle at center, #050a1e 0%, #010103 100%);
+            padding: 0;
+            overflow: hidden;
+        }
+        
+        #stars-screen .back-btn {
+            background: rgba(255,255,255,0.15);
+            color: white;
+        }
+
+        #skyCanvas {
+            display: block; position: absolute; top: 0; left: 0; z-index: 1;
+        }
+
+        .star-trigger {
+            position: absolute; width: 26px; height: 26px; border-radius: 50%;
+            cursor: pointer; z-index: 10; transform: translate(-50%, -50%) scale(0);
+            opacity: 0; pointer-events: none; 
+            background: radial-gradient(circle, #ffffff 0%, rgba(236,64,122,0) 70%);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s;
+        }
+
+        .star-trigger.discovered {
+            transform: translate(-50%, -50%) scale(1); opacity: 1; pointer-events: auto;
+            box-shadow: 0 0 15px #fff, 0 0 30px #ec407a, 0 0 50px rgba(236, 64, 122, 0.5);
+            animation: pulseGlow 2s infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            from { transform: translate(-50%, -50%) scale(0.9); box-shadow: 0 0 12px #fff, 0 0 25px #ec407a; }
+            to { transform: translate(-50%, -50%) scale(1.2); box-shadow: 0 0 20px #fff, 0 0 40px #ec407a; }
+        }
+
+        .instruction {
+            position: absolute; top: 12%; left: 50%; transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.7); font-size: 15px; text-align: center;
+            z-index: 5; pointer-events: none; text-shadow: 0 2px 8px rgba(0,0,0,0.9);
+            line-height: 1.7; width: 90%; font-family: 'Tajawal', sans-serif;
+        }
+
+        .popup {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8);
+            background: rgba(3, 5, 15, 0.96); border: 1px solid rgba(236, 64, 122, 0.4);
+            border-radius: 24px; padding: 30px; width: 310px; box-sizing: border-box;
+            color: white; text-align: center; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.8), 0 0 25px rgba(236, 64, 122, 0.15);
+            z-index: 20; opacity: 0; visibility: hidden; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-family: 'Tajawal', sans-serif;
+        }
+
+        .popup.active { transform: translate(-50%, -50%) scale(1); opacity: 1; visibility: visible; }
+        .popup h2 { color: #ec407a; margin-top: 0; font-size: 20px; text-shadow: 0 0 10px rgba(236, 64, 122, 0.4); }
+        .popup p { font-size: 14.5px; line-height: 1.7; margin-bottom: 22px; color: #e2e8f0; }
+
+        .close-btn {
+            background: linear-gradient(135deg, #ec407a, #b3144d); color: white; border: none;
+            padding: 10px 32px; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 13px;
+            box-shadow: 0 5px 15px rgba(236, 64, 122, 0.3); transition: transform 0.2s;
+        }
+        .close-btn:hover { transform: scale(1.05); }
+
+        /* ---------------------------------
+           حقل الإدخال في شاشة البداية
+           --------------------------------- */
+        .password-input {
+            padding: 12px;
+            border-radius: 15px;
+            border: 2px solid #fda4af;
+            font-size: 1.2rem;
+            text-align: center;
+            margin-bottom: 15px;
+            outline: none;
+            width: 80%;
+            max-width: 300px;
+            font-family: 'Tajawal', sans-serif;
+            color: var(--text-dark);
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 5px 15px rgba(251, 113, 133, 0.1);
+        }
+        .password-input::placeholder {
+            color: #fca5a5;
+            font-size: 1rem;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- شاشة تسجيل الدخول (السؤال وكلمة السر) -->
+    <div id="login-screen" class="screen active" style="z-index: 2000;">
+        <h1 class="title" style="font-size: 2.2rem; text-align: center;">مرحبا </h1>
+        <p style="font-size: 1.3rem; font-weight: bold; margin-bottom: 20px; text-align: center;">متى كان أول لقاء بيننا؟</p>
+        <input type="text" id="password-input" class="password-input" >
+        <button class="btn" onclick="checkPassword()">دخول</button>
+        <p id="error-msg" style="color: #e11d48; margin-top: 15px; font-weight: bold; opacity: 0; transition: opacity 0.3s;">الإجابة غير صحيحة، حاولي مرة أخرى ❤️</p>
+    </div>
+
+    <!-- الشاشة الرئيسية أصبحت مخفية في البداية -->
+    <div id="main-screen" class="screen">
+        <h1 class="title">إلى شيماء 🤍</h1>
+        <div class="menu-grid">
+            <div class="menu-card" onclick="openScreen('message-screen')">
+                <i>💌</i><p>رسالة القلب</p>
+            </div>
+            <div class="menu-card" onclick="openScreen('stars-screen')">
+                <i>🌌</i><p>سماء حبنا</p>
+            </div>
+            <div class="menu-card" onclick="openScreen('photo-screen')">
+                <i>📸</i><p>ذكريات مخفية</p>
+            </div>
+            <div class="menu-card" onclick="openScreen('interactive-screen'); startChat();">
+                <i>🎁</i><p>مفاجأة</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="message-screen" class="screen">
+        <button class="back-btn" onclick="openScreen('main-screen'); resetEnvelope();">عودة</button>
+        <h2 style="margin-bottom: 10px;">اضغطي على الظرف لفتحه</h2>
+        <div class="envelope-wrapper" id="envelope" onclick="openEnvelope()">
+            <div class="env-back"></div><div class="env-flap"></div>
+            <div class="env-letter"><div id="typewriter-text"></div></div>
+            <div class="env-front"></div>
+        </div>
+    </div>
+
+    <div id="stars-screen" class="screen">
+        <button class="back-btn" onclick="openScreen('main-screen')">عودة</button>
+        
+        <div class="instruction">
+            السماء مليئة بالأسرار... ابحثي وحركي إصبعكِ لتكتشفي الكوكبة المخفية ✨<br> 
+        </div>
+
+        <div class="star-trigger" id="trigger-p1" onclick="openPopup('p1')"></div>
+        <div class="star-trigger" id="trigger-p2" onclick="openPopup('p2')"></div>
+        <div class="star-trigger" id="trigger-p3" onclick="openPopup('p3')"></div>
+        <div class="star-trigger" id="trigger-p4" onclick="openPopup('p4')"></div>
+        <div class="star-trigger" id="trigger-p5" onclick="openPopup('p5')"></div>
+
+        <div class="popup" id="p1">
+            <h2>نجمة الروح النقيّة 🌟</h2>
+            <p>عيناك الشهلتان فيهما سحر جعلني أقه بحبهما منذ أول نظرة لها</p>
+            <button class="close-btn" onclick="closePopup('p1')">العودة للمجرّة 🌌</button>
+        </div>
+        <div class="popup" id="p2">
+            <h2>نجمة الابتسامة المضيئة 💫</h2>
+            <p>ضحكتك وابتسامتك هي القادرة على إضاءة عتمة أي يوم صعب أَمر به.</p>
+            <button class="close-btn" onclick="closePopup('p2')">العودة للمجرّة 🌌</button>
+        </div>
+        <div class="popup" id="p3">
+            <h2>نجمة بداية الحكاية</h2>
+            <p>تاريخ 22 / 5 / 2025 سيبقى محفورا في سماء ذكرياتي كأجمل يوم بدأت فيه قصتنا.</p>
+            <button class="close-btn" onclick="closePopup('p3')">العودة للمجرّة 🌌</button>
+        </div>
+        <div class="popup" id="p4">
+            <h2>نجمة السند والراحة ⚓</h2>
+            <p>أنت لست فقط حبيبتي أنت الملجأ الهادئ والمكان الذي أشعر فيه بالأمان التام.</p>
+            <button class="close-btn" onclick="closePopup('p4')">العودة للمجرّة 🌌</button>
+        </div>
+        <div class="popup" id="p5">
+            <h2>نجمة الوعد الصادق ✉️</h2>
+            <p>أعدك أن تبقي دائما نجمتي المفضلة وأن أحبك اليوم وغدا وإلى نهاية العمر  ❤️</p>
+            <button class="close-btn" onclick="closePopup('p5')">العودة للمجرّة 🌌</button>
+        </div>
+
+        <canvas id="skyCanvas"></canvas>
+    </div>
+
+    <div id="photo-screen" class="screen">
+        <button class="back-btn" onclick="openScreen('main-screen')">عودة</button>
+        <h2 style="margin-bottom: 15px;">امسحي الضباب لتكشفي الصورة</h2>
+        <p style="font-size:0.9rem; margin-bottom: 15px;">(وبعد المسح، اضغطي عليها لتكبيرها)</p>
+        <div class="scratch-container">
+            <img id="gallery-img" class="scratch-img" src="" alt="Memory">
+            <canvas id="fog-canvas"></canvas>
+        </div>
+        <div class="photo-controls">
+            <button class="btn" onclick="prevPhoto()">السابق</button>
+            <button class="btn" onclick="nextPhoto()">التالي</button>
+        </div>
+    </div>
+
+    <div id="fullscreen-overlay">
+        <button onclick="document.getElementById('fullscreen-overlay').style.display='none'" style="position:absolute; top:30px; right:30px; font-size:3rem; background:none; border:none; color:white; cursor:pointer;">&times;</button>
+        <img id="fullscreen-img" src="">
+    </div>
+
+    <div id="interactive-screen" class="screen">
+        <button class="back-btn" onclick="openScreen('main-screen');">عودة</button>
+        <div id="chat-container"></div>
+        <div id="chat-action">
+            <button class="btn" id="chat-btn" onclick="nextChatStep()">...</button>
+        </div>
+    </div>
+
+    <script>
+        // --- دالة التحقق من كلمة السر المضافة ---
+        function checkPassword() {
+            const pass = document.getElementById('password-input').value.trim();
+            // يمكنك إضافة أي صيغ أخرى قد تكتبها شيماء للتاريخ
+            if(pass === '2025-02-12' || pass === '12-02-2025' || pass === '12/2/2025' || pass === '12/02/2025' || pass === '2025-02-12' || pass === '2025/2/12' || pass === '2025212' ) {
+                document.getElementById('login-screen').classList.remove('active');
+                openScreen('main-screen');
+            } else {
+                document.getElementById('error-msg').style.opacity = '1';
+                // إخفاء رسالة الخطأ بعد 3 ثوانٍ
+                setTimeout(() => {
+                    document.getElementById('error-msg').style.opacity = '0';
+                }, 3000);
+            }
+        }
+
+        // --- إدارة التنقل ---
+        function openScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            
+            // ضبط لون الخلفية بناءً على الشاشة المفتوحة
+            if(screenId === 'stars-screen') {
+                document.body.style.backgroundColor = '#010103';
+            } else {
+                document.body.style.backgroundColor = 'var(--bg-playful)';
+            }
+        }
+
+        // ==========================================
+        //  1. نظام الظرف والآلة الكاتبة 
+        // ==========================================
+        const messageText = "لم أبحث يوماً عن سبب لأخبركِ ما في قلبي..\nفوجودكِ في حياتي هو السبب الأجمل والأكبر.\nشكراً لأنكِ جعلتِ أيامي مليئة بالدفء،\nوشكراً لأنكِ أنتِ، بكل تفاصيلكِ التي أحب.\nفحين أنظر إليكِ أدرك أن الحياة أهدتني أجمل ما فيها،\nفلست بحاجة لمناسبة لأقول لكِ أنني أحبكِ.\nفكل لحظة أقضيها معكِ هي احتفال خاص بقلبي،\nوكل ثانية بجانبكِ هي أغلى من أن تُنسى. 🤍";
+        
+        let typeIndex = 0; let isTyping = false; let typeTimeout;
+
+        function openEnvelope() {
+            const env = document.getElementById('envelope');
+            if(!env.classList.contains('open')) {
+                env.classList.add('open');
+                setTimeout(startTypeWriter, 1000);
+            }
+        }
+        function resetEnvelope() {
+            document.getElementById('envelope').classList.remove('open');
+            document.getElementById('typewriter-text').innerHTML = "";
+            typeIndex = 0; isTyping = false; clearTimeout(typeTimeout);
+        }
+        function startTypeWriter() { if(isTyping) return; isTyping = true; typeWriter(); }
+        function typeWriter() {
+            if (typeIndex < messageText.length) {
+                let char = messageText.charAt(typeIndex);
+                document.getElementById("typewriter-text").innerHTML += (char === '\n') ? "<br><br>" : char;
+                typeIndex++; typeTimeout = setTimeout(typeWriter, 50);
+            } else { isTyping = false; }
+        }
+
+        // ==========================================
+//  2. نظام الصور ومسح الضباب 
+        // ==========================================
+        const images = [
+            "1000389875.jpg", "1000353312.jpg", "1000167981.jpg", 
+            "1000148907.jpg", "1000130791.jpg", "1000110685.jpg", 
+            "1000100484.jpg", "1000055629.jpg", "1000055552.jpg"
+        ];
+        let currentPic = 0;
+
+        const fogCanvas = document.getElementById('fog-canvas');
+        const fogCtx = fogCanvas.getContext('2d');
+        let isDrawing = false; let isDragged = false;
+
+        function initFog() {
+            fogCanvas.width = 300; fogCanvas.height = 400;
+            fogCtx.globalCompositeOperation = 'source-over';
+            fogCtx.fillStyle = '#cbd5e1'; fogCtx.fillRect(0, 0, fogCanvas.width, fogCanvas.height);
+            fogCtx.fillStyle = '#475569'; fogCtx.font = '20px Tajawal';
+            fogCtx.textAlign = 'center'; fogCtx.fillText('امسحي هنا', fogCanvas.width/2, fogCanvas.height/2);
+        }
+
+        function loadPhoto() { document.getElementById('gallery-img').src = images[currentPic]; initFog(); }
+        function nextPhoto() { currentPic = (currentPic + 1) % images.length; loadPhoto(); }
+        function prevPhoto() { currentPic = (currentPic - 1 + images.length) % images.length; loadPhoto(); }
+
+        function getMousePos(evt) {
+            const rect = fogCanvas.getBoundingClientRect();
+            const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+            const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
+            return { x: clientX - rect.left, y: clientY - rect.top };
+        }
+
+        function scratch(evt) {
+            evt.preventDefault();
+            const pos = getMousePos(evt);
+            fogCtx.globalCompositeOperation = 'destination-out';
+            fogCtx.beginPath(); fogCtx.arc(pos.x, pos.y, 35, 0, Math.PI * 2); fogCtx.fill();
+        }
+
+        fogCanvas.addEventListener('mousedown', (e) => { isDrawing = true; isDragged = false; scratch(e); });
+        fogCanvas.addEventListener('mousemove', (e) => { if(isDrawing){ isDragged = true; scratch(e); } });
+        window.addEventListener('mouseup', () => { isDrawing = false; });
+        fogCanvas.addEventListener('touchstart', (e) => { isDrawing = true; isDragged = false; scratch(e); }, {passive: false});
+        
+        fogCanvas.addEventListener('touchmove', (e) => { if(isDrawing){ isDragged = true; scratch(e); } }, {passive: false});
+        window.addEventListener('touchend', () => { isDrawing = false; });
+
+        fogCanvas.addEventListener('click', () => {
+            if(!isDragged) {
+                document.getElementById('fullscreen-img').src = images[currentPic];
+                document.getElementById('fullscreen-overlay').style.display = 'flex';
+            }
+        });
+        fogCanvas.addEventListener('touchend', (e) => {
+            if(!isDragged && e.changedTouches.length > 0) {
+                document.getElementById('fullscreen-img').src = images[currentPic];
+                document.getElementById('fullscreen-overlay').style.display = 'flex';
+            }
+        });
+        loadPhoto();
+
+        // ==========================================
+        //  3. المحادثة التفاعلية (المفاجأة)
+        // ==========================================
+        const chatSteps = [
+            { text: "يا حبيبتي ويا أجمل صدفة بحياتي 🤍", btn: "كمل" },
+            { text: "ما لي غيرك بهالدنيا يا شيماء", btn: "وغيرو؟" },
+            { text: "عندي سؤال صغير ألك", btn: "شو هو" },
+            { text: "تتوقعي شقد نسبة حبي ألك؟", btn: "فرجيني" },
+            { text: "النسبة هي:", btn: "...", isPercentage: true }
+        ];
+        let currentChatStep = 0;
+
+        function startChat() {
+            currentChatStep = 0;
+            document.getElementById('chat-container').innerHTML = '';
+            document.getElementById('chat-btn').style.display = 'inline-block';
+            nextChatStep();
+        }
+
+        function nextChatStep() {
+            if (currentChatStep >= chatSteps.length) return;
+            const step = chatSteps[currentChatStep];
+            const container = document.getElementById('chat-container');
+            const btn = document.getElementById('chat-btn');
+
+            if (step.isPercentage) {
+                btn.style.display = 'none';
+                let percDiv = document.createElement('div'); percDiv.className = 'percentage-text';
+                container.appendChild(percDiv);
+                let count = 0;
+                let interval = setInterval(() => {
+                    count += Math.floor(Math.random() * 15000);
+                    if(count > 1000000) count = 1000000;
+                    percDiv.innerHTML = count.toLocaleString() + "% ♾️";
+                    if(count >= 1000000) {
+                        clearInterval(interval);
+                        setTimeout(() => {
+                            let finalMsg = document.createElement('div'); finalMsg.className = 'chat-bubble';
+                            finalMsg.innerHTML = "أحبكِ أضعاف هذا الرقم! ❤️"; container.appendChild(finalMsg);
+                        }, 500);
+                    }
+                }, 50);
+            } else {
+                let bubble = document.createElement('div'); bubble.className = 'chat-bubble';
+                bubble.innerHTML = step.text; container.innerHTML = ''; container.appendChild(bubble);
+                btn.innerHTML = step.btn; currentChatStep++;
+            }
+        }
+
+        // ==========================================
+        //  4. نظام خريطة النجوم الخاص بك (العبقري!)
+        // ==========================================
+        const skyCanvas = document.getElementById('skyCanvas');
+        const skyCtx = skyCanvas.getContext('2d');
+        skyCanvas.width = window.innerWidth; skyCanvas.height = window.innerHeight;
+
+        let backgroundStars = []; let constellationStars = [];
+        let mouseParticles = []; let mouse = { x: null, y: null, radius: 65 };
+
+        window.addEventListener('resize', () => {
+            skyCanvas.width = window.innerWidth; skyCanvas.height = window.innerHeight;
+            initStarsMap();
+        });
+
+        function handleMove(x, y) {
+            // تفعيل حركة الماوس فقط عندما تكون شاشة النجوم معروضة
+            if(!document.getElementById('stars-screen').classList.contains('active')) return;
+            
+            mouse.x = x; mouse.y = y;
+            for(let i=0; i<2; i++) {
+                mouseParticles.push({
+                    x: x, y: y, vx: (Math.random() - 0.5) * 1.5, vy: (Math.random() - 0.5) * 1.5,
+                    alpha: 1, size: Math.random() * 2 + 1
+                });
+            }
+        }
+
+        window.addEventListener('mousemove', (e) => handleMove(e.clientX, e.clientY));
+        window.addEventListener('touchmove', (e) => { handleMove(e.touches[0].clientX, e.touches[0].clientY); });
+        window.addEventListener('touchend', () => { mouse.x = null; mouse.y = null; });
+
+        class RealStar {
+            constructor(x, y, size, color) {
+                this.x = x; this.y = y; this.size = size; this.color = color;
+                this.alpha = Math.random(); this.twinkleSpeed = 0.004 + Math.random() * 0.012;
+            }
+            draw() {
+                skyCtx.beginPath(); skyCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                skyCtx.fillStyle = this.color.replace('1)', `${this.alpha})`); skyCtx.fill();
+            }
+            update() {
+                this.alpha += this.twinkleSpeed;
+                if (this.alpha > 0.95 || this.alpha < 0.05) this.twinkleSpeed = -this.twinkleSpeed;
+                this.draw();
+            }
+        }
+
+        class ConstellationStar {
+            constructor(x, y, isCore = false, popupId = null) {
+                this.x = x; this.y = y; this.isCore = isCore; this.popupId = popupId;
+                this.discovered = false; this.alpha = 0; this.size = isCore ? 2.2 : 1.3;
+                this.flareRadius = 0; this.exploding = false;
+            }
+            draw() {
+                if (!this.discovered) return;
+                skyCtx.beginPath(); skyCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                skyCtx.shadowBlur = this.isCore ? 15 : 6; skyCtx.shadowColor = "#ec407a";
+                skyCtx.fillStyle = `rgba(255, 182, 193, ${this.alpha})`; skyCtx.fill(); skyCtx.shadowBlur = 0;
+                if (this.exploding && this.isCore) {
+                    skyCtx.beginPath(); skyCtx.arc(this.x, this.y, this.flareRadius, 0, Math.PI * 2);
+                    skyCtx.strokeStyle = `rgba(255, 255, 255, ${1 - this.flareRadius/40})`;
+                    skyCtx.lineWidth = 1.5; skyCtx.stroke();
+                }
+            }
+            update() {
+                if (!this.discovered) {
+                    let dx = mouse.x - this.x; let dy = mouse.y - this.y;
+                    if (Math.sqrt(dx * dx + dy * dy) < mouse.radius) {
+                        this.discovered = true;
+                        if (this.isCore) {
+                            this.exploding = true;
+                            const btn = document.getElementById(`trigger-${this.popupId}`);
+                            if(btn) btn.classList.add('discovered');
+                        }
+                    }
+                }
+                if (this.discovered) {
+                    if (this.alpha < 1) this.alpha += 0.04;
+                    if (this.isCore) this.size = 3.5;
+                    if (this.exploding) { this.flareRadius += 1.8; if (this.flareRadius > 40) this.exploding = false; }
+                }
+                this.draw();
+            }
+        }
+
+        function initStarsMap() {
+            backgroundStars = []; constellationStars = [];
+            const starColors = ['rgba(255, 255, 255, 1)', 'rgba(219, 234, 254, 1)', 'rgba(254, 254, 224, 1)'];
+            for (let i = 0; i < 1200; i++) {
+                backgroundStars.push(new RealStar(Math.random() * skyCanvas.width, Math.random() * skyCanvas.height, Math.random() * Math.random() * 1.3 + 0.2, starColors[Math.floor(Math.random() * starColors.length)]));
+            }
+            const w = skyCanvas.width; const h = skyCanvas.height;
+            const letterPaths = [
+                {x1: 78, y1: 45, x2: 76, y2: 52}, {x1: 76, y1: 52, x2: 74, y2: 45}, {x1: 74, y1: 45, x2: 72, y2: 52}, {x1: 72, y1: 52, x2: 70, y2: 45}, {x1: 70, y1: 45, x2: 67, y2: 53}, {x1: 74, y1: 36, x2: 72, y2: 31}, {x1: 74, y1: 36, x2: 76, y2: 31}, 
+                {x1: 67, y1: 53, x2: 60, y2: 53}, {x1: 60, y1: 53, x2: 56, y2: 47}, {x1: 56, y1: 47, x2: 53, y2: 53}, {x1: 60, y1: 61, x2: 60.1, y2: 61.5}, {x1: 58, y1: 61, x2: 58.1, y2: 61.5}, 
+                {x1: 53, y1: 53, x2: 49, y2: 53}, {x1: 49, y1: 53, x2: 46, y2: 48}, {x1: 46, y1: 48, x2: 43, y2: 53}, {x1: 43, y1: 53, x2: 46, y2: 58}, {x1: 46, y1: 58, x2: 49, y2: 53},
+                {x1: 43, y1: 53, x2: 38, y2: 53}, {x1: 38, y1: 53, x2: 38, y2: 24},
+                {x1: 27, y1: 47, x2: 24, y2: 43}, {x1: 24, y1: 43, x2: 22, y2: 47}, {x1: 22, y1: 47, x2: 25, y2: 51}
+            ];
+
+            letterPaths.forEach(path => {
+                let p1x = (path.x1 / 100) * w; let p1y = (path.y1 / 100) * h;
+                let p2x = (path.x2 / 100) * w; let p2y = (path.y2 / 100) * h;
+                let dx = p2x - p1x; let dy = p2y - p1y;
+                let starsOnLine = Math.max(Math.floor(Math.sqrt(dx * dx + dy * dy) / 5), 3);
+                for (let j = 0; j <= starsOnLine; j++) constellationStars.push(new ConstellationStar(p1x + dx * (j / starsOnLine), p1y + dy * (j / starsOnLine), false));
+            });
+
+            constellationStars.push(new ConstellationStar(w * 0.74, h * 0.49, true, 'p1')); 
+            constellationStars.push(new ConstellationStar(w * 0.60, h * 0.53, true, 'p2')); 
+            constellationStars.push(new ConstellationStar(w * 0.46, h * 0.53, true, 'p3')); 
+            constellationStars.push(new ConstellationStar(w * 0.38, h * 0.36, true, 'p4')); 
+            constellationStars.push(new ConstellationStar(w * 0.24, h * 0.47, true, 'p5')); 
+
+            document.getElementById('trigger-p1').style.top = '49%'; document.getElementById('trigger-p1').style.left = '74%';
+            document.getElementById('trigger-p2').style.top = '53%'; document.getElementById('trigger-p2').style.left = '60%';
+            document.getElementById('trigger-p3').style.top = '53%'; document.getElementById('trigger-p3').style.left = '46%';
+            document.getElementById('trigger-p4').style.top = '36%'; document.getElementById('trigger-p4').style.left = '38%';
+            document.getElementById('trigger-p5').style.top = '47%'; document.getElementById('trigger-p5').style.left = '24%';
+        }
+
+        function animateStarsMap() {
+            skyCtx.clearRect(0, 0, skyCanvas.width, skyCanvas.height);
+            backgroundStars.forEach(star => star.update());
+            for(let i = mouseParticles.length - 1; i >= 0; i--) {
+                let p = mouseParticles[i];
+                p.x += p.vx; p.y += p.vy; p.alpha -= 0.02;
+                if(p.alpha <= 0) { mouseParticles.splice(i, 1); continue; }
+                skyCtx.beginPath(); skyCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                skyCtx.fillStyle = `rgba(255, 200, 220, ${p.alpha})`; skyCtx.fill();
+            }
+            constellationStars.forEach(star => star.update());
+            for (let i = 0; i < constellationStars.length; i++) {
+                if (!constellationStars[i].discovered) continue;
+                for (let j = i + 1; j < constellationStars.length; j++) {
+                    if (!constellationStars[j].discovered) continue;
+                    let dx = constellationStars[i].x - constellationStars[j].x; let dy = constellationStars[i].y - constellationStars[j].y;
+                    if (Math.sqrt(dx * dx + dy * dy) < 22) {
+                        skyCtx.beginPath(); skyCtx.moveTo(constellationStars[i].x, constellationStars[i].y); skyCtx.lineTo(constellationStars[j].x, constellationStars[j].y);
+                        skyCtx.strokeStyle = `rgba(236, 64, 122, ${(constellationStars[i].alpha + constellationStars[j].alpha) / 2 * 0.75})`; skyCtx.lineWidth = 1.7; skyCtx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animateStarsMap);
+        }
+
+        function openPopup(id) { document.getElementById(id).classList.add('active'); }
+        function closePopup(id) { document.getElementById(id).classList.remove('active'); }
+
+        initStarsMap();
+        animateStarsMap();
+
+    </script>
+</body>
+</html>
+
+
+موارد
